@@ -1,0 +1,27 @@
+{
+  "name": "todo-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohhunkwon/todo-list.git"
+  },
+  "author": "Ohhun Kwon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ohhunkwon/todo-list/issues"
+  },
+  "homepage": "https://github.com/ohhunkwon/todo-list#readme",
+  "devDependencies": {
+    "css-loader": "^6.1.0",
+    "style-loader": "^3.1.0",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.2"
+  }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List</title>
+  </head>
+  <body>
+    <header class="title">
+      <h1>ToDoList</h1>
+    </header>
+
+    <div class="content">
+      <div class="todo-nav">
+        <ul class="todo-categories">
+          <li data-tab-target="inbox">Inbox</li>
+          <li data-tab-target="today">Today</li>
+          <li data-tab-target="this-week">This week</li>
+          <li data-tab-target="projects"><h3>Projects</h3></li>
+        </ul>
+      </div>
+
+      <div class="todos" id="todos">
+        <div id="inbox" data-tab-content class="active">
+          <h3>Inbox</h3>
+          <p id="add-task">+ Add Task</p>
+
+          <div id="inbox-content"></div>
+        </div>
+        <div id="today" data-tab-content>
+          <h3>Today</h3>
+          <div id="today-content"></div>
+        </div>
+        <div id="this-week" data-tab-content>
+          <h3>This week</h3>
+          <div id="this-week-content"></div>
+        </div>
+        <div id="projects" data-tab-content>
+          <h3>Projects</h3>
+          <p>+ Add Project</p>
+          <div id="projects-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
