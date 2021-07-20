@@ -9,6 +9,7 @@
 html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100%;
+    font-size: 1.1rem;
 }
 
 .title {
@@ -24,12 +25,13 @@ html, body {
 
 .todo-nav {
     border-right: 2px solid black;
-    padding: 30px;
+    padding: 50px;
+    width: 300px;
 }
 
-.todo-categories li {
+.todo-categories li, #projects-tab h3 {
     list-style-type: none;
-    padding: 10px 0;
+    padding: 15px 0;
 }
 
 .todos {
