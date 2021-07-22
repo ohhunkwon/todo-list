@@ -6,50 +6,60 @@
   margin: 0;
 }
 
-html, body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 100%;
-    font-size: 1.1rem;
+html,
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  height: 100%;
+  font-size: 1.1rem;
 }
 
 .title {
-    border-bottom: 2px solid black;
-    padding: 30px;
-    font-size: 1.5rem;
+  border-bottom: 2px solid black;
+  padding: 30px;
+  font-size: 1.5rem;
 }
 
 .content {
-    display: flex;
-    height: 100%;
+  display: flex;
+  height: 100%;
 }
 
 .todo-nav {
-    border-right: 2px solid black;
-    padding: 50px;
-    width: 300px;
+  border-right: 2px solid black;
+  padding: 50px;
+  width: 300px;
 }
 
-.todo-categories li, #projects-tab h3 {
-    list-style-type: none;
-    padding: 15px 0;
+.todo-categories li, h3 {
+  list-style-type: none;
+  padding: 15px 0;
 }
 
 .todos {
-    margin: 40px 50px;
+  margin: 40px 50px;
+}
+
+#add-project,
+#add-task {
+  margin: 15px 0px;
+}
+
+form {
+  margin: 15px 0px;
 }
 
 [data-tab-content] {
-    display: none;
+  display: none;
 }
 
 .active[data-tab-content] {
-    display: block;
+  display: block;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .empty-alert {
-    color: red;
+  color: red;
 }

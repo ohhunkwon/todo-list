@@ -8,10 +8,12 @@ export default class UI {
         UI.loadHiddenInboxForm()
         UI.inboxFormPopUp();
         UI.submitAddToInbox();
+        UI.cancelAddToInbox();
 
         UI.loadHiddenProjectForm();
         UI.projectsFormPopUp();
         UI.submitAddToProjects();
+        UI.cancelAddToProjects();
     }
 
     static switchCategory() {
@@ -37,6 +39,7 @@ export default class UI {
                     <input type="text" id="task-description" name="description" placeholder="task" />
                     <input type="date" id="dueDate" name="dueDate" placeholder="due date" />
                     <button type="submit" id="inbox-submit-btn">Submit</button>
+                    <button type="button" id="inbox-cancel-btn">Cancel</button>
                 </form>
             `
         form.classList.add('hidden');
@@ -102,6 +105,17 @@ export default class UI {
         setTimeout(function () {
             inbox.removeChild(notifyFields);
         }, 2000);
+    }
+
+    static cancelAddToInbox() {
+        const cancelTaskBtn = document.getElementById('inbox-cancel-btn')
+        const addTaskBtn = document.getElementById('add-task');
+        const form = document.getElementById('inbox-form')
+
+        cancelTaskBtn.addEventListener('click', () => {
+            addTaskBtn.classList.remove('hidden');
+            form.classList.add('hidden');
+        })
     }
 
     static loadHiddenProjectForm() {
@@ -180,7 +194,7 @@ export default class UI {
         }
 
         const notifyFields = document.createElement('p');
-        notifyFields.textContent = "Please enter the description and due date of the task.";
+        notifyFields.textContent = "Please enter the title of the project.";
         notifyFields.classList.add('empty-alert');
 
         projects.appendChild(notifyFields);
@@ -188,5 +202,16 @@ export default class UI {
         setTimeout(function () {
             projects.removeChild(notifyFields);
         }, 2000);
+    }
+
+    static cancelAddToProjects() {
+        const cancelProjectBtn = document.getElementById('projects-cancel-btn')
+        const addProjectBtn = document.getElementById('add-project');
+        const form = document.getElementById('projects-form')
+
+        cancelProjectBtn.addEventListener('click', () => {
+            addProjectBtn.classList.remove('hidden');
+            form.classList.add('hidden');
+        })
     }
 }
