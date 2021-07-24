@@ -41,7 +41,7 @@ body {
 
 #add-project,
 #add-task {
-  margin: 15px 0px;
+  margin: 10px 0px;
 }
 
 form {
@@ -50,6 +50,10 @@ form {
 
 [data-tab-content] {
   display: none;
+}
+
+[data-tab-content] p {
+  padding: 10px 0;
 }
 
 .active[data-tab-content] {

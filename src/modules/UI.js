@@ -62,7 +62,8 @@ export default class UI {
         const addTaskBtn = document.getElementById('add-task');
         const description = document.getElementById('task-description');
         const dueDate = document.getElementById('dueDate');
-        const form = document.getElementById('inbox-form')
+        const form = document.getElementById('inbox-form');
+        const inbox = document.getElementById('inbox');
 
         submitBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -70,7 +71,7 @@ export default class UI {
             addTaskBtn.classList.remove('hidden');
 
             if (description.value === "" || dueDate.value === "") {
-                UI.checkInboxFields();
+                UI.checkInboxFields(addTaskBtn, inbox)
             } else {
                 const task = new Task(description.value, dueDate.value);
                 const taskDOMElement = document.createElement('p');
@@ -85,9 +86,7 @@ export default class UI {
         })
     }
 
-    static checkInboxFields() {
-        const addTaskBtn = document.getElementById('add-task');
-        const inbox = document.getElementById('inbox');
+    static checkInboxFields(addTaskBtn, inbox) {
         const alertExists = document.querySelector(".empty-alert");
 
         addTaskBtn.classList.add("hidden");
@@ -170,13 +169,23 @@ export default class UI {
                 tabContent.setAttribute('data-tab-content', '')
                 const projectTitle = document.createElement('h3')
                 projectTitle.textContent = `${project.getName()}`
+                const addTaskToProject = document.createElement('p')
+                addTaskToProject.textContent = '+ Add Task'
+                addTaskToProject.id = `add-task-to-${project.getName()}`
                 tabContent.appendChild(projectTitle)
+                tabContent.appendChild(addTaskToProject)
                 todos.appendChild(tabContent)
 
                 projectsTab.insertBefore(projectDOMElement, addProjectBtn);
                 description.value = "";
                 form.classList.add('hidden');
 
+                const projectForm = document.createElement('form');
+                const projectDiv = document.getElementById(`${project.getName()}`)
+
+                UI.addFormToProject(project, projectForm, projectDiv)
+                UI.projectFormPopUp(addTaskToProject, projectForm)
+                UI.submitTaskToProject(project, projectDiv)
                 UI.switchCategory()
             }
         })
@@ -212,6 +221,55 @@ export default class UI {
         cancelProjectBtn.addEventListener('click', () => {
             addProjectBtn.classList.remove('hidden');
             form.classList.add('hidden');
+        })
+    }
+
+    static addFormToProject(project, projectForm, projectDiv) {
+        projectForm.innerHTML = `
+        <form action="#">
+            <input type="text" id="task-description-${project.getName()}" name="description" placeholder="task" />
+            <input type="date" id="dueDate-${project.getName()}" name="dueDate" placeholder="due date" />
+            <button type="submit" id="${project.getName()}-submit-btn">Submit</button>
+            <button type="button" id="${project.getName()}-cancel-btn">Cancel</button>
+        </form>`
+
+        projectForm.classList.add('hidden');
+        projectForm.id = `${project.getName()}-form`
+        projectDiv.appendChild(projectForm);
+    }
+
+    static projectFormPopUp(addTaskToProject, projectForm) {
+        addTaskToProject.addEventListener('click', () => {
+            addTaskToProject.classList.add('hidden');
+            projectForm.classList.remove('hidden');
+        })
+    }
+
+    static submitTaskToProject(project, projectDiv) {
+        const submitBtn = document.getElementById(`${project.getName()}-submit-btn`)
+        const addTaskBtn = document.getElementById(`add-task-to-${project.getName()}`);
+        const description = document.getElementById(`task-description-${project.getName()}`);
+        const dueDate = document.getElementById(`dueDate-${project.getName()}`);
+        const form = document.getElementById(`${project.getName()}-form`)
+
+        submitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            addTaskBtn.classList.remove('hidden');
+
+            if (description.value === "" || dueDate.value === "") {
+                UI.checkInboxFields(addTaskBtn, projectDiv)
+            } else {
+                const task = new Task(description.value, dueDate.value);
+                const taskDOMElement = document.createElement('p');
+
+                taskDOMElement.textContent = `- ${task.getDescription()} || Due: ${task.getDate()}`;
+
+                projectDiv.insertBefore(taskDOMElement, addTaskBtn);
+                description.value = "";
+                dueDate.value = "";
+                form.classList.add('hidden');
+            }
         })
     }
 }
