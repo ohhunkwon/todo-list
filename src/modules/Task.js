@@ -3,6 +3,7 @@ export default class Task {
         this.description = description
         this.dueDate = dueDate
         this.completed = false
+        this.id = Date.now()
     }
 
     setDescription(description) {
@@ -27,5 +28,9 @@ export default class Task {
 
     getCompleted() {
         return this.completed
+    }
+
+    getID() {
+        return this.id
     }
 }

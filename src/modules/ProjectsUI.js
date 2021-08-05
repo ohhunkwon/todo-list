@@ -106,6 +106,26 @@ export default class ProjectsTab {
         }, 2000)
     }
 
+    static checkInboxFields(addTaskBtn, inbox) {
+        const alertExists = document.querySelector(".empty-alert")
+
+        addTaskBtn.classList.add("hidden")
+
+        if (alertExists) {
+            return
+        }
+
+        const notifyFields = document.createElement('p')
+        notifyFields.textContent = "Please enter the description and due date of the task."
+        notifyFields.classList.add('empty-alert')
+
+        inbox.appendChild(notifyFields)
+
+        setTimeout(function () {
+            inbox.removeChild(notifyFields)
+        }, 2000)
+    }
+
     static cancelSubmission() {
         const cancelProjectBtn = document.getElementById('projects-cancel-btn')
         const addProjectBtn = document.getElementById('add-project')
@@ -113,6 +133,17 @@ export default class ProjectsTab {
 
         cancelProjectBtn.addEventListener('click', () => {
             addProjectBtn.classList.remove('hidden')
+            form.classList.add('hidden')
+        })
+    }
+
+    static cancelForm(project) {
+        const cancelTaskBtn = document.getElementById(`${project}-cancel-btn`)
+        const addTaskBtn = document.getElementById(`add-task-to-${project}`)
+        const form = document.getElementById(`${project}-form`)
+
+        cancelTaskBtn.addEventListener('click', () => {
+            addTaskBtn.classList.remove('hidden')
             form.classList.add('hidden')
         })
     }
@@ -129,6 +160,8 @@ export default class ProjectsTab {
         projectForm.classList.add('hidden')
         projectForm.id = `${project.getName()}-form`
         projectDiv.appendChild(projectForm)
+
+        ProjectsTab.cancelForm(project.getName())
     }
 
     static projectFormPopUp(addTaskToProject, projectForm) {
@@ -156,13 +189,24 @@ export default class ProjectsTab {
                 const task = new Task(description.value, dueDate.value)
                 const taskDOMElement = document.createElement('p')
 
-                taskDOMElement.textContent = `- ${task.getDescription()} || Due: ${task.getDate()}`
+                taskDOMElement.innerHTML = `- ${task.getDescription()}, due: ${task.getDate()}
+                                            <button id='del-${task.getID()}'>delete</button>`
 
                 projectDiv.insertBefore(taskDOMElement, addTaskBtn)
                 description.value = ""
                 dueDate.value = ""
                 form.classList.add('hidden')
+
+                ProjectsTab.deleteTask(task.getID())
             }
+        })
+    }
+
+    static deleteTask(id) {
+        const btn = document.getElementById(`del-${id}`)
+
+        btn.addEventListener('click', (e) => {
+            e.target.parentElement.remove()
         })
     }
 

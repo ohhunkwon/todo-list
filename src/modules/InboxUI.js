@@ -54,13 +54,24 @@ export default class InboxTab {
                 const task = new Task(description.value, dueDate.value)
                 const taskDOMElement = document.createElement('p')
 
-                taskDOMElement.textContent = `- ${task.getDescription()} || Due: ${task.getDate()}`
+                taskDOMElement.innerHTML = `- ${task.getDescription()}, due: ${task.getDate()}
+                                            <button id='del-${task.getID()}'>delete</button>`
 
                 inbox.insertBefore(taskDOMElement, addTaskBtn)
                 description.value = ""
                 dueDate.value = ""
                 form.classList.add('hidden')
+
+                InboxTab.deleteTask(task.getID())
             }
+        })
+    }
+
+    static deleteTask(id) {
+        const btn = document.getElementById(`del-${id}`)
+
+        btn.addEventListener('click', (e) => {
+            e.target.parentElement.remove()
         })
     }
 
