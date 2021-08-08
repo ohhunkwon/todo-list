@@ -188,9 +188,21 @@ export default class ProjectsTab {
             } else {
                 const task = new Task(description.value, dueDate.value)
                 const taskDOMElement = document.createElement('p')
+                taskDOMElement.id = task.getID()
+                const isDone = `${task.getDescription()} ${task.getCompleted()}`
 
-                taskDOMElement.innerHTML = `- ${task.getDescription()}, due: ${task.getDate()}
+                taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
+                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                             <button id='del-${task.getID()}'>delete</button>`
+
+                
+                const nodes = taskDOMElement.childNodes
+
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].style) {
+                        nodes[i].style.setProperty('display', 'inline')
+                    }
+                }
 
                 projectDiv.insertBefore(taskDOMElement, addTaskBtn)
                 description.value = ""
@@ -198,6 +210,19 @@ export default class ProjectsTab {
                 form.classList.add('hidden')
 
                 ProjectsTab.deleteTask(task.getID())
+                ProjectsTab.checkDone(isDone)
+            }
+        })
+    }
+
+    static checkDone(isDone) {
+        const checkbox = document.getElementById(isDone)
+
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+            } else {
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
             }
         })
     }

@@ -7,6 +7,7 @@ export default class InboxTab {
         InboxTab.formPopUp()
         InboxTab.submitToInbox()
         InboxTab.cancelForm()
+
     }
 
     static createForm() {
@@ -52,17 +53,42 @@ export default class InboxTab {
                 InboxTab.checkFields(addTaskBtn, inbox)
             } else {
                 const task = new Task(description.value, dueDate.value)
-                const taskDOMElement = document.createElement('p')
+                const taskDOMElement = document.createElement('div')
+                taskDOMElement.id = task.getID()
+                const isDone = `${task.getDescription()} ${task.getCompleted()}`
 
-                taskDOMElement.innerHTML = `- ${task.getDescription()}, due: ${task.getDate()}
+                taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
+                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                             <button id='del-${task.getID()}'>delete</button>`
 
+                
+                const nodes = taskDOMElement.childNodes
+
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].style) {
+                        nodes[i].style.setProperty('display', 'inline')
+                    }
+                }
+                
                 inbox.insertBefore(taskDOMElement, addTaskBtn)
                 description.value = ""
                 dueDate.value = ""
                 form.classList.add('hidden')
 
                 InboxTab.deleteTask(task.getID())
+                InboxTab.checkDone(isDone)
+            }
+        })
+    }
+
+    static checkDone(isDone) {
+        const checkbox = document.getElementById(isDone)
+
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+            } else {
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
             }
         })
     }
