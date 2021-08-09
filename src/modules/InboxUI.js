@@ -54,7 +54,14 @@ export default class InboxTab {
 
             if (description.value === "" || dueDate.value === "") {
                 InboxTab.checkFields(addTaskBtn, inbox)
-            } else {
+            }
+            else if (InboxTab.defaultProject.getTasks().some(task => task.getDescription() === description.value)) {
+                alert("This todo already exists!")
+                description.value = ""
+                dueDate.value = ""
+                form.classList.add('hidden')
+            } 
+            else {
                 const task = new Task(description.value, dueDate.value)
                 InboxTab.defaultProject.addTask(task)
                 const taskDOMElement = document.createElement('div')

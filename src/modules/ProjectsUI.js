@@ -58,9 +58,15 @@ export default class ProjectsTab {
 
             addProjectBtn.classList.remove('hidden')
 
+            console.log(ProjectsTab.collection)
+
             if (description.value === "") {
                 ProjectsTab.checkFields()
-            } else {
+            }
+            else if (ProjectsTab.collection.some(project => project.getName() === description.value)) {
+                alert("This project already exists!")
+            } 
+            else {
                 const project = new Project(description.value)
                 ProjectsTab.collection.push(project)
                 const projectDOMElement = document.createElement('li')
@@ -196,7 +202,14 @@ export default class ProjectsTab {
 
             if (description.value === "" || dueDate.value === "") {
                 ProjectsTab.checkInboxFields(addTaskBtn, projectDiv)
-            } else {
+            }
+            else if (project.getTasks().some(task => task.getDescription() === description.value)) {
+                alert("This todo already exists!")
+                description.value = ""
+                dueDate.value = ""
+                form.classList.add('hidden')
+            } 
+            else {
                 const task = new Task(description.value, dueDate.value)
                 project.addTask(task)
                 const taskDOMElement = document.createElement('p')
