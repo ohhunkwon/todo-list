@@ -223,7 +223,7 @@ export default class ProjectsTab {
 
                 ProjectsTab.addToToday(task)
                 ProjectsTab.addToWeek(task)
-                ProjectsTab.deleteTask(task.getID())
+                ProjectsTab.deleteTask(task.getID(), project)
                 ProjectsTab.checkDone(isDone)
             }
         })
@@ -296,7 +296,7 @@ export default class ProjectsTab {
         }
     }
 
-    static deleteTask(id) {
+    static deleteTask(id, project) {
         const btn = document.getElementById(`del-${id}`)
         const btnClone = document.getElementById(`del-${id}-clone`)
         const btnCloneWeek = document.getElementById(`del-${id}-clone-week`)
@@ -309,6 +309,11 @@ export default class ProjectsTab {
             if (btnCloneWeek) {
                 btnCloneWeek.parentElement.remove()
             }
+            project.getTasks()
+                .splice(project.getTasks()
+                    .findIndex(
+                        task => task.getID() === id
+                    ), 1)
         })
         if (btnClone) {
             btnClone.addEventListener('click', (e) => {
@@ -317,6 +322,11 @@ export default class ProjectsTab {
                 if (btnCloneWeek) {
                     btnCloneWeek.parentElement.remove()
                 }
+                project.getTasks()
+                .splice(project.getTasks()
+                    .findIndex(
+                        task => task.getID() === id
+                    ), 1)
             })
         }
         if (btnCloneWeek) {
@@ -326,6 +336,11 @@ export default class ProjectsTab {
                 if (btnClone) {
                     btnClone.parentElement.remove()
                 }
+                project.getTasks()
+                .splice(project.getTasks()
+                    .findIndex(
+                        task => task.getID() === id
+                    ), 1)
             })
         }
     }
@@ -388,7 +403,7 @@ export default class ProjectsTab {
                 const day = Number(task.dueDate.slice(-2))
                 const today = new Date()
                 const dayToday = today.getDate()
-                if ((day - dayToday) <= 7 && !ProjectsTab.todayCollection.includes(task)) {
+                if ((day - dayToday) <= 7 && !ProjectsTab.weekCollection.includes(task)) {
                     ProjectsTab.weekCollection.push(task)
                     tabContent.appendChild(taskClone)
                 }

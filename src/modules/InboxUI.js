@@ -145,7 +145,7 @@ export default class InboxTab {
                 const day = Number(task.dueDate.slice(-2))
                 const today = new Date()
                 const dayToday = today.getDate()
-                if ((day - dayToday) <= 7 && !ProjectsUI.todayCollection.includes(task)) {
+                if ((day - dayToday) <= 7 && !ProjectsUI.weekCollection.includes(task)) {
                     ProjectsUI.weekCollection.push(task)
                     tabContent.appendChild(taskClone)
                 }
@@ -233,6 +233,11 @@ export default class InboxTab {
             if (btnCloneWeek) {
                 btnCloneWeek.parentElement.remove()
             }
+            InboxTab.defaultProject.getTasks()
+                .splice(InboxTab.defaultProject.getTasks()
+                    .findIndex(
+                        task => task.getID() === id
+                    ), 1)
         })
         if (btnClone) {
             btnClone.addEventListener('click', (e) => {
@@ -241,6 +246,11 @@ export default class InboxTab {
                 if (btnCloneWeek) {
                     btnCloneWeek.parentElement.remove()
                 }
+                InboxTab.defaultProject.getTasks()
+                    .splice(InboxTab.defaultProject.getTasks()
+                        .findIndex(
+                            task => task.getID() === id
+                        ), 1)
             })
         }
         if (btnCloneWeek) {
@@ -250,6 +260,11 @@ export default class InboxTab {
                 if (btnClone) {
                     btnClone.parentElement.remove()
                 }
+                InboxTab.defaultProject.getTasks()
+                    .splice(InboxTab.defaultProject.getTasks()
+                        .findIndex(
+                            task => task.getID() === id
+                        ), 1)
             })
         }
     }
