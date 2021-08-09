@@ -1,13 +1,23 @@
 import Task from './Task'
 import Project from './Project'
+import InboxUI from './InboxUI'
 
 export default class ProjectsTab {
+    static collection = []
+    static todayCollection = []
+    static weekCollection = []
+
     static initializeProjectsTab() {
 
         ProjectsTab.createForm()
         ProjectsTab.formPopUp()
         ProjectsTab.submitToProjects()
         ProjectsTab.cancelSubmission()
+        ProjectsTab.addDefaultProject()
+    }
+
+    static addDefaultProject() {
+        ProjectsTab.collection.push(InboxUI.defaultProject)
     }
 
     static createForm() {
@@ -52,6 +62,7 @@ export default class ProjectsTab {
                 ProjectsTab.checkFields()
             } else {
                 const project = new Project(description.value)
+                ProjectsTab.collection.push(project)
                 const projectDOMElement = document.createElement('li')
 
                 projectDOMElement.setAttribute('data-tab-target', `${project.getName()}`)
@@ -187,6 +198,7 @@ export default class ProjectsTab {
                 ProjectsTab.checkInboxFields(addTaskBtn, projectDiv)
             } else {
                 const task = new Task(description.value, dueDate.value)
+                project.addTask(task)
                 const taskDOMElement = document.createElement('p')
                 taskDOMElement.id = task.getID()
                 const isDone = `${task.getDescription()} ${task.getCompleted()}`
@@ -209,6 +221,8 @@ export default class ProjectsTab {
                 dueDate.value = ""
                 form.classList.add('hidden')
 
+                ProjectsTab.addToToday(task)
+                ProjectsTab.addToWeek(task)
                 ProjectsTab.deleteTask(task.getID())
                 ProjectsTab.checkDone(isDone)
             }
@@ -217,21 +231,168 @@ export default class ProjectsTab {
 
     static checkDone(isDone) {
         const checkbox = document.getElementById(isDone)
+        const checkboxClone = document.getElementById(`${isDone}-clone`)
+        const checkboxCloneWeek = document.getElementById(`${isDone}-clone-week`)
+
 
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                if (checkboxClone) {
+                    checkboxClone.checked = true
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                }
+                if (checkboxCloneWeek) {
+                    checkboxCloneWeek.checked = true
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                }
             } else {
                 checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                if (checkboxClone) {
+                    checkboxClone.checked = false
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                }
+                if (checkboxCloneWeek) {
+                    checkboxCloneWeek.checked = false
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                }
             }
         })
+
+        if (checkboxClone) {
+            checkboxClone.addEventListener('change', () => {
+                if (checkboxClone.checked) {
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                    checkbox.checked = true
+                    checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                } else {
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                    checkbox.checked = false
+                    checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                }
+            })
+        }
+
+        if (checkboxCloneWeek) {
+            checkboxCloneWeek.addEventListener('change', () => {
+                if (checkboxCloneWeek.checked) {
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                    checkbox.checked = true
+                    checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                    if (checkboxClone) {
+                        checkboxClone.checked = true
+                        checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                    }
+                } else {
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                    checkbox.checked = false
+                    checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                    if (checkboxClone) {
+                        checkboxClone.checked = false
+                        checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                    }
+                }
+            })
+        }
     }
 
     static deleteTask(id) {
         const btn = document.getElementById(`del-${id}`)
+        const btnClone = document.getElementById(`del-${id}-clone`)
+        const btnCloneWeek = document.getElementById(`del-${id}-clone-week`)
 
         btn.addEventListener('click', (e) => {
             e.target.parentElement.remove()
+            if (btnClone) {
+                btnClone.parentElement.remove()
+            }
+            if (btnCloneWeek) {
+                btnCloneWeek.parentElement.remove()
+            }
+        })
+        if (btnClone) {
+            btnClone.addEventListener('click', (e) => {
+                e.target.parentElement.remove()
+                btn.parentElement.remove()
+                if (btnCloneWeek) {
+                    btnCloneWeek.parentElement.remove()
+                }
+            })
+        }
+        if (btnCloneWeek) {
+            btnCloneWeek.addEventListener('click', (e) => {
+                e.target.parentElement.remove()
+                btn.parentElement.remove()
+                if (btnClone) {
+                    btnClone.parentElement.remove()
+                }
+            })
+        }
+    }
+
+    static addToToday(task) {
+        const collection = ProjectsTab.collection
+        const tabContent = document.getElementById('today-content')
+
+        const taskClone = document.createElement('div')
+        const isDone = `${task.getDescription()} ${task.getCompleted()}-clone`
+        taskClone.id = `${task.getID()}-clone`
+        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+                                <p>${task.getDescription()} | due: ${task.getDate()}</p>
+                                <button id='del-${task.getID()}-clone'>delete</button>`
+        
+        const nodes = taskClone.childNodes
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].style) {
+                nodes[i].style.setProperty('display', 'inline')
+            }
+        }
+
+        collection.forEach(project => {
+            const tasks = project.getTasks()
+            tasks.forEach(task => {
+                const day = Number(task.dueDate.slice(-2))
+                const today = new Date()
+                const dayToday = today.getDate()
+                if (day === dayToday && !ProjectsTab.todayCollection.includes(task)) {
+                    ProjectsTab.todayCollection.push(task)
+                    tabContent.appendChild(taskClone)
+                }
+            })
+        })
+    }
+
+    static addToWeek(task) {
+        const collection = ProjectsTab.collection
+        const tabContent = document.getElementById('this-week-content')
+
+        const taskClone = document.createElement('div')
+        const isDone = `${task.getDescription()} ${task.getCompleted()}-clone-week`
+        taskClone.id = `${task.getID()}-clone-week`
+        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+                                <p>${task.getDescription()} | due: ${task.getDate()}</p>
+                                <button id='del-${task.getID()}-clone-week'>delete</button>`
+        
+        const nodes = taskClone.childNodes
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].style) {
+                nodes[i].style.setProperty('display', 'inline')
+            }
+        }
+
+        collection.forEach(project => {
+            const tasks = project.getTasks()
+            tasks.forEach(task => {
+                const day = Number(task.dueDate.slice(-2))
+                const today = new Date()
+                const dayToday = today.getDate()
+                if ((day - dayToday) <= 7 && !ProjectsTab.todayCollection.includes(task)) {
+                    ProjectsTab.weekCollection.push(task)
+                    tabContent.appendChild(taskClone)
+                }
+            })
         })
     }
 

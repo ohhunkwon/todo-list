@@ -1,5 +1,8 @@
 import InboxUI from './InboxUI'
 import ProjectsUI from './ProjectsUI'
+import TodayUI from './TodayUI'
+import ThisWeekUI from './ThisWeekUI'
+
 
 export default class UI {
     static loadHomepage() {
