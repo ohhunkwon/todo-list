@@ -14,6 +14,36 @@ export default class ProjectsTab {
         ProjectsTab.submitToProjects()
         ProjectsTab.cancelSubmission()
         ProjectsTab.addDefaultProject()
+
+    }
+
+    static renderTasks(task, project, projectDiv, description, dueDate, form, addTaskBtn) {
+        const taskDOMElement = document.createElement('p')
+        taskDOMElement.id = task.getID()
+        const isDone = `${task.getDescription()} ${task.getCompleted()}`
+
+        taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
+                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
+                                            <button id='del-${task.getID()}'>delete</button>`
+
+
+        const nodes = taskDOMElement.childNodes
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].style) {
+                nodes[i].style.setProperty('display', 'inline')
+            }
+        }
+
+        projectDiv.insertBefore(taskDOMElement, addTaskBtn)
+        description.value = ""
+        dueDate.value = ""
+        form.classList.add('hidden')
+
+        ProjectsTab.addToToday(task)
+        ProjectsTab.addToWeek(task)
+        ProjectsTab.deleteTask(task.getID(), project)
+        ProjectsTab.checkDone(isDone)
     }
 
     static addDefaultProject() {
@@ -58,14 +88,12 @@ export default class ProjectsTab {
 
             addProjectBtn.classList.remove('hidden')
 
-            console.log(ProjectsTab.collection)
-
             if (description.value === "") {
                 ProjectsTab.checkFields()
             }
             else if (ProjectsTab.collection.some(project => project.getName() === description.value)) {
                 alert("This project already exists!")
-            } 
+            }
             else {
                 const project = new Project(description.value)
                 ProjectsTab.collection.push(project)
@@ -208,36 +236,12 @@ export default class ProjectsTab {
                 description.value = ""
                 dueDate.value = ""
                 form.classList.add('hidden')
-            } 
+            }
             else {
                 const task = new Task(description.value, dueDate.value)
                 project.addTask(task)
-                const taskDOMElement = document.createElement('p')
-                taskDOMElement.id = task.getID()
-                const isDone = `${task.getDescription()} ${task.getCompleted()}`
 
-                taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
-                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
-                                            <button id='del-${task.getID()}'>delete</button>`
-
-                
-                const nodes = taskDOMElement.childNodes
-
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].style) {
-                        nodes[i].style.setProperty('display', 'inline')
-                    }
-                }
-
-                projectDiv.insertBefore(taskDOMElement, addTaskBtn)
-                description.value = ""
-                dueDate.value = ""
-                form.classList.add('hidden')
-
-                ProjectsTab.addToToday(task)
-                ProjectsTab.addToWeek(task)
-                ProjectsTab.deleteTask(task.getID(), project)
-                ProjectsTab.checkDone(isDone)
+                ProjectsTab.renderTasks(task, project, projectDiv, description, dueDate, form, addTaskBtn)
             }
         })
     }
@@ -336,10 +340,10 @@ export default class ProjectsTab {
                     btnCloneWeek.parentElement.remove()
                 }
                 project.getTasks()
-                .splice(project.getTasks()
-                    .findIndex(
-                        task => task.getID() === id
-                    ), 1)
+                    .splice(project.getTasks()
+                        .findIndex(
+                            task => task.getID() === id
+                        ), 1)
             })
         }
         if (btnCloneWeek) {
@@ -350,10 +354,10 @@ export default class ProjectsTab {
                     btnClone.parentElement.remove()
                 }
                 project.getTasks()
-                .splice(project.getTasks()
-                    .findIndex(
-                        task => task.getID() === id
-                    ), 1)
+                    .splice(project.getTasks()
+                        .findIndex(
+                            task => task.getID() === id
+                        ), 1)
             })
         }
     }
@@ -365,10 +369,10 @@ export default class ProjectsTab {
         const taskClone = document.createElement('div')
         const isDone = `${task.getDescription()} ${task.getCompleted()}-clone`
         taskClone.id = `${task.getID()}-clone`
-        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+        taskClone.innerHTML = `<input type="checkbox" id="${isDone}">
                                 <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                 <button id='del-${task.getID()}-clone'>delete</button>`
-        
+
         const nodes = taskClone.childNodes
 
         for (let i = 0; i < nodes.length; i++) {
@@ -398,10 +402,10 @@ export default class ProjectsTab {
         const taskClone = document.createElement('div')
         const isDone = `${task.getDescription()} ${task.getCompleted()}-clone-week`
         taskClone.id = `${task.getID()}-clone-week`
-        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+        taskClone.innerHTML = `<input type="checkbox" id="${isDone}">
                                 <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                 <button id='del-${task.getID()}-clone-week'>delete</button>`
-        
+
         const nodes = taskClone.childNodes
 
         for (let i = 0; i < nodes.length; i++) {

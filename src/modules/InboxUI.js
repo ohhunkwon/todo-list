@@ -13,6 +13,35 @@ export default class InboxTab {
         InboxTab.cancelForm()
     }
 
+    static renderTasks(task, inbox, description, dueDate, form, addTaskBtn) {
+        const taskDOMElement = document.createElement('div')
+        taskDOMElement.id = task.getID()
+        const isDone = `${task.getDescription()} ${task.getCompleted()}`
+
+        taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
+                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
+                                            <button id='del-${task.getID()}'>delete</button>`
+
+
+        const nodes = taskDOMElement.childNodes
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].style) {
+                nodes[i].style.setProperty('display', 'inline')
+            }
+        }
+
+        inbox.insertBefore(taskDOMElement, addTaskBtn)
+        description.value = ""
+        dueDate.value = ""
+        form.classList.add('hidden')
+
+        InboxTab.addToToday(task)
+        InboxTab.addToWeek(task)
+        InboxTab.deleteTask(task.getID())
+        InboxTab.checkDone(isDone)
+    }
+
     static createForm() {
         const form = document.createElement('form')
         const inbox = document.getElementById('inbox')
@@ -60,36 +89,12 @@ export default class InboxTab {
                 description.value = ""
                 dueDate.value = ""
                 form.classList.add('hidden')
-            } 
+            }
             else {
                 const task = new Task(description.value, dueDate.value)
                 InboxTab.defaultProject.addTask(task)
-                const taskDOMElement = document.createElement('div')
-                taskDOMElement.id = task.getID()
-                const isDone = `${task.getDescription()} ${task.getCompleted()}`
-
-                taskDOMElement.innerHTML = `<input type="checkbox" id="${isDone}">
-                                            <p>${task.getDescription()} | due: ${task.getDate()}</p>
-                                            <button id='del-${task.getID()}'>delete</button>`
-
-                
-                const nodes = taskDOMElement.childNodes
-
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].style) {
-                        nodes[i].style.setProperty('display', 'inline')
-                    }
-                }
-                
-                inbox.insertBefore(taskDOMElement, addTaskBtn)
-                description.value = ""
-                dueDate.value = ""
-                form.classList.add('hidden')
-
-                InboxTab.addToToday(task)
-                InboxTab.addToWeek(task)
-                InboxTab.deleteTask(task.getID())
-                InboxTab.checkDone(isDone)
+               
+                InboxTab.renderTasks(task, inbox, description, dueDate, form, addTaskBtn)
             }
         })
     }
@@ -101,10 +106,10 @@ export default class InboxTab {
         const taskClone = document.createElement('div')
         const isDone = `${task.getDescription()} ${task.getCompleted()}-clone`
         taskClone.id = `${task.getID()}-clone`
-        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+        taskClone.innerHTML = `<input type="checkbox" id="${isDone}">
                                 <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                 <button id='del-${task.getID()}-clone'>delete</button>`
-        
+
         const nodes = taskClone.childNodes
 
         for (let i = 0; i < nodes.length; i++) {
@@ -134,10 +139,10 @@ export default class InboxTab {
         const taskClone = document.createElement('div')
         const isDone = `${task.getDescription()} ${task.getCompleted()}-clone-week`
         taskClone.id = `${task.getID()}-clone-week`
-        taskClone.innerHTML =   `<input type="checkbox" id="${isDone}">
+        taskClone.innerHTML = `<input type="checkbox" id="${isDone}">
                                 <p>${task.getDescription()} | due: ${task.getDate()}</p>
                                 <button id='del-${task.getID()}-clone-week'>delete</button>`
-        
+
         const nodes = taskClone.childNodes
 
         for (let i = 0; i < nodes.length; i++) {
