@@ -32,9 +32,10 @@ export default class ProjectsTab {
             allProjectsStorage.forEach(project => {
                 const projectJSON = JSON.parse(project)
 
-                ProjectsTab.renderProjects(projectJSON.name, todos, projectsTab, description, form, addProjectBtn)
+                console.log(projectJSON)
+
+                ProjectsTab.renderProjects(projectJSON, todos, projectsTab, description, form, addProjectBtn)
             })
-            console.log(allProjectsStorage)
         }
     }
 
@@ -58,17 +59,17 @@ export default class ProjectsTab {
     static renderProjects(project, todos, projectsTab, description, form, addProjectBtn) {
     const projectDOMElement = document.createElement('li')
 
-    projectDOMElement.setAttribute('data-tab-target', `${project}`)
-    projectDOMElement.textContent = `${project}`
+    projectDOMElement.setAttribute('data-tab-target', `${project.getName()}`)
+    projectDOMElement.textContent = `${project.getName()}`
 
     const tabContent = document.createElement('div')
-    tabContent.id = `${project}`
+    tabContent.id = `${project.getName()}`
     tabContent.setAttribute('data-tab-content', '')
     const projectTitle = document.createElement('h3')
-    projectTitle.textContent = `${project}`
+    projectTitle.textContent = `${project.getName()}`
     const addTaskToProject = document.createElement('p')
     addTaskToProject.textContent = '+ Add Task'
-    addTaskToProject.id = `add-task-to-${project}`
+    addTaskToProject.id = `add-task-to-${project.getName()}`
     tabContent.appendChild(projectTitle)
     tabContent.appendChild(addTaskToProject)
     todos.appendChild(tabContent)
@@ -78,7 +79,7 @@ export default class ProjectsTab {
     form.classList.add('hidden')
 
     const projectForm = document.createElement('form')
-    const projectDiv = document.getElementById(`${project}`)
+    const projectDiv = document.getElementById(`${project.getName()}`)
 
     ProjectsTab.addFormToProject(project, projectForm, projectDiv)
     ProjectsTab.projectFormPopUp(addTaskToProject, projectForm)
@@ -162,7 +163,7 @@ export default class ProjectsTab {
         else {
             const project = new Project(description.value)
             ProjectsTab.collection.push(project)
-            ProjectsTab.renderProjects(project.getName(), todos, projectsTab, description, form, addProjectBtn)
+            ProjectsTab.renderProjects(project, todos, projectsTab, description, form, addProjectBtn)
 
             ProjectsTab.storageUpdateProject(project)
         }
@@ -236,14 +237,14 @@ export default class ProjectsTab {
     static addFormToProject(project, projectForm, projectDiv) {
     projectForm.innerHTML = `
         <form action="#">
-            <input type="text" id="task-description-${project}" name="description" placeholder="task" />
-            <input type="date" id="dueDate-${project}" name="dueDate" placeholder="due date" />
-            <button type="submit" id="${project}-submit-btn">Submit</button>
-            <button type="button" id="${project}-cancel-btn">Cancel</button>
+            <input type="text" id="task-description-${project.getName()}" name="description" placeholder="task" />
+            <input type="date" id="dueDate-${project.getName()}" name="dueDate" placeholder="due date" />
+            <button type="submit" id="${project.getName()}-submit-btn">Submit</button>
+            <button type="button" id="${project.getName()}-cancel-btn">Cancel</button>
         </form>`
 
     projectForm.classList.add('hidden')
-    projectForm.id = `${project}-form`
+    projectForm.id = `${project.getName()}-form`
     projectDiv.appendChild(projectForm)
 
     ProjectsTab.cancelForm(project)
@@ -257,11 +258,11 @@ export default class ProjectsTab {
 }
 
     static submitTaskToProject(project, projectDiv) {
-    const submitBtn = document.getElementById(`${project}-submit-btn`)
-    const addTaskBtn = document.getElementById(`add-task-to-${project}`)
-    const description = document.getElementById(`task-description-${project}`)
-    const dueDate = document.getElementById(`dueDate-${project}`)
-    const form = document.getElementById(`${project}-form`)
+    const submitBtn = document.getElementById(`${project.getName()}-submit-btn`)
+    const addTaskBtn = document.getElementById(`add-task-to-${project.getName()}`)
+    const description = document.getElementById(`task-description-${project.getName()}`)
+    const dueDate = document.getElementById(`dueDate-${project.getName()}`)
+    const form = document.getElementById(`${project.getName()}-form`)
 
     submitBtn.addEventListener('click', (e) => {
         e.preventDefault()
