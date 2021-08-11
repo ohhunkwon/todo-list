@@ -11,6 +11,11 @@ export default class InboxTab {
         InboxTab.formPopUp()
         InboxTab.submitToInbox()
         InboxTab.cancelForm()
+        InboxTab.addDefaultProject()
+    }
+
+    static addDefaultProject() {
+        ProjectsUI.collection.push(InboxTab.defaultProject)
     }
 
     static renderTasks(task, inbox, description, dueDate, form, addTaskBtn) {
