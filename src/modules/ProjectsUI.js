@@ -11,6 +11,8 @@ export default class ProjectsTab {
 
         const allProjectsStorage = ProjectsTab.allProjectsStorage()
 
+        console.log('all', allProjectsStorage)
+
         if (!allProjectsStorage) {
             ProjectsTab.createForm()
             ProjectsTab.formPopUp()
@@ -32,28 +34,40 @@ export default class ProjectsTab {
             console.log(allProjectsStorage)
 
             allProjectsStorage.forEach(project => {
-                console.log(project)
                 const projectJSON = JSON.parse(project)
                 Object.setPrototypeOf(projectJSON, new Project)
-                console.log(projectJSON)
 
-                ProjectsTab.renderProjects(projectJSON, todos, projectsTab, description, form, addProjectBtn)
-
-                const addTaskBtn = document.getElementById(`add-task-to-${projectJSON.getName()}`)
-                const taskdescription = document.getElementById(`task-description-${projectJSON.getName()}`)
-                const dueDate = document.getElementById(`dueDate-${projectJSON.getName()}`)
-                const taskform = document.getElementById(`${projectJSON.getName()}-form`)
-                const projectDiv = document.getElementById(`${projectJSON.getName()}`)
-
-                console.log('proj Div', projectDiv)
-
-                projectJSON.getTasks().forEach(task => {
-                    if (task) {
+                if (projectJSON.getName() === 'default') {
+                    projectJSON.getTasks().forEach(task => {
+                        const addTaskBtn = document.getElementById('add-task')
+                        const description = document.getElementById('task-description')
+                        const dueDate = document.getElementById('dueDate')
+                        const form = document.getElementById('inbox-form')
+                        const inbox = document.getElementById('inbox')
                         Object.setPrototypeOf(task, new Task)
-                        console.log(task)
-                        ProjectsTab.renderTasks(task, projectJSON, projectDiv, taskdescription, dueDate, taskform, addTaskBtn)
-                    }
-                })
+                        console.log(projectJSON, 'inbox')
+                        InboxUI.renderTasks(task, projectJSON, inbox, description, dueDate, form, addTaskBtn)
+
+                    })
+                } else {
+                    ProjectsTab.renderProjects(projectJSON, todos, projectsTab, description, form, addProjectBtn)
+
+                    const addTaskBtn = document.getElementById(`add-task-to-${projectJSON.getName()}`)
+                    const taskdescription = document.getElementById(`task-description-${projectJSON.getName()}`)
+                    const dueDate = document.getElementById(`dueDate-${projectJSON.getName()}`)
+                    const taskform = document.getElementById(`${projectJSON.getName()}-form`)
+                    const projectDiv = document.getElementById(`${projectJSON.getName()}`)
+
+                    console.log('proj Div', projectDiv)
+
+                    projectJSON.getTasks().forEach(task => {
+                        if (task) {
+                            Object.setPrototypeOf(task, new Task)
+                            console.log(task)
+                            ProjectsTab.renderTasks(task, projectJSON, projectDiv, taskdescription, dueDate, taskform, addTaskBtn)
+                        }
+                    })
+                }
             })
         }
     }
@@ -72,8 +86,6 @@ export default class ProjectsTab {
     }
 
     static storageUpdateProject(project) {
-        console.log(project)
-
         localStorage.setItem(`${project.getName()}`, JSON.stringify(project))
     }
 
@@ -135,7 +147,7 @@ export default class ProjectsTab {
         ProjectsTab.addToToday(task)
         ProjectsTab.addToWeek(task)
         ProjectsTab.deleteTask(task.getID(), project)
-        ProjectsTab.checkDone(isDone)
+        ProjectsTab.checkDone(isDone, project)
     }
 
     static createForm() {
@@ -184,7 +196,7 @@ export default class ProjectsTab {
             }
             else {
                 const project = new Project(description.value)
-                
+
                 ProjectsTab.renderProjects(project, todos, projectsTab, description, form, addProjectBtn)
 
                 ProjectsTab.storageUpdateProject(project)
@@ -311,7 +323,7 @@ export default class ProjectsTab {
         })
     }
 
-    static checkDone(isDone) {
+    static checkDone(isDone, project) {
         const checkbox = document.getElementById(isDone)
         const checkboxClone = document.getElementById(`${isDone}-clone`)
         const checkboxCloneWeek = document.getElementById(`${isDone}-clone-week`)
@@ -339,6 +351,7 @@ export default class ProjectsTab {
                     checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
             }
+            ProjectsTab.storageUpdateProject(project)
         })
 
         if (checkboxClone) {
@@ -352,6 +365,7 @@ export default class ProjectsTab {
                     checkbox.checked = false
                     checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
+                ProjectsTab.storageUpdateProject(project)
             })
         }
 
@@ -374,6 +388,7 @@ export default class ProjectsTab {
                         checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                     }
                 }
+                ProjectsTab.storageUpdateProject(project)
             })
         }
     }

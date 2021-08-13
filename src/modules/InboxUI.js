@@ -14,11 +14,15 @@ export default class InboxTab {
         InboxTab.addDefaultProject()
     }
 
+    static storageUpdateProject(project) {
+        localStorage.setItem(`${InboxTab.defaultProject.getName()}`, JSON.stringify(project))
+    }
+
     static addDefaultProject() {
         ProjectsUI.collection.push(InboxTab.defaultProject)
     }
 
-    static renderTasks(task, inbox, description, dueDate, form, addTaskBtn) {
+    static renderTasks(task, project, inbox, description, dueDate, form, addTaskBtn) {
         const taskDOMElement = document.createElement('div')
         taskDOMElement.id = task.getID()
         const isDone = `${task.getDescription()} ${task.getCompleted()}`
@@ -41,10 +45,10 @@ export default class InboxTab {
         dueDate.value = ""
         form.classList.add('hidden')
 
-        InboxTab.addToToday(task)
-        InboxTab.addToWeek(task)
-        InboxTab.deleteTask(task.getID())
-        InboxTab.checkDone(isDone)
+        InboxTab.addToToday(task, project)
+        InboxTab.addToWeek(task, project)
+        InboxTab.deleteTask(task.getID(), project)
+        InboxTab.checkDone(isDone, project)
     }
 
     static createForm() {
@@ -98,14 +102,14 @@ export default class InboxTab {
             else {
                 const task = new Task(description.value, dueDate.value)
                 InboxTab.defaultProject.addTask(task)
-               
-                InboxTab.renderTasks(task, inbox, description, dueDate, form, addTaskBtn)
+                console.log('before: ', this.defaultProject)
+                InboxTab.renderTasks(task, this.defaultProject, inbox, description, dueDate, form, addTaskBtn)
+                InboxTab.storageUpdateProject(this.defaultProject)
             }
         })
     }
 
-    static addToToday(task) {
-        const collection = ProjectsUI.collection
+    static addToToday(task, project) {
         const tabContent = document.getElementById('today-content')
 
         const taskClone = document.createElement('div')
@@ -123,22 +127,19 @@ export default class InboxTab {
             }
         }
 
-        collection.forEach(project => {
-            const tasks = project.getTasks()
-            tasks.forEach(task => {
-                const day = Number(task.dueDate.slice(-2))
-                const today = new Date()
-                const dayToday = today.getDate()
-                if (day === dayToday && !ProjectsUI.todayCollection.includes(task)) {
-                    ProjectsUI.todayCollection.push(task)
-                    tabContent.appendChild(taskClone)
-                }
-            })
+        console.log('after: ', project)
+        project.getTasks().forEach(task => {
+            const day = Number(task.dueDate.slice(-2))
+            const today = new Date()
+            const dayToday = today.getDate()
+            if (day === dayToday && !ProjectsUI.todayCollection.includes(task)) {
+                ProjectsUI.todayCollection.push(task)
+                tabContent.appendChild(taskClone)
+            }
         })
     }
 
-    static addToWeek(task) {
-        const collection = ProjectsUI.collection
+    static addToWeek(task, project) {
         const tabContent = document.getElementById('this-week-content')
 
         const taskClone = document.createElement('div')
@@ -156,21 +157,18 @@ export default class InboxTab {
             }
         }
 
-        collection.forEach(project => {
-            const tasks = project.getTasks()
-            tasks.forEach(task => {
-                const day = Number(task.dueDate.slice(-2))
-                const today = new Date()
-                const dayToday = today.getDate()
-                if ((day - dayToday) <= 7 && !ProjectsUI.weekCollection.includes(task)) {
-                    ProjectsUI.weekCollection.push(task)
-                    tabContent.appendChild(taskClone)
-                }
-            })
+        project.getTasks().forEach(task => {
+            const day = Number(task.dueDate.slice(-2))
+            const today = new Date()
+            const dayToday = today.getDate()
+            if ((day - dayToday) <= 7 && !ProjectsUI.weekCollection.includes(task)) {
+                ProjectsUI.weekCollection.push(task)
+                tabContent.appendChild(taskClone)
+            }
         })
     }
 
-    static checkDone(isDone) {
+    static checkDone(isDone, project) {
         const checkbox = document.getElementById(isDone)
         const checkboxClone = document.getElementById(`${isDone}-clone`)
         const checkboxCloneWeek = document.getElementById(`${isDone}-clone-week`)
@@ -198,6 +196,7 @@ export default class InboxTab {
                     checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
             }
+            InboxTab.storageUpdateProject(project)
         })
 
         if (checkboxClone) {
@@ -211,6 +210,7 @@ export default class InboxTab {
                     checkbox.checked = false
                     checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
+                InboxTab.storageUpdateProject(project)
             })
         }
 
@@ -233,11 +233,12 @@ export default class InboxTab {
                         checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                     }
                 }
+                InboxTab.storageUpdateProject(project)
             })
         }
     }
 
-    static deleteTask(id) {
+    static deleteTask(id, project) {
         const btn = document.getElementById(`del-${id}`)
         const btnClone = document.getElementById(`del-${id}-clone`)
         const btnCloneWeek = document.getElementById(`del-${id}-clone-week`)
@@ -250,11 +251,12 @@ export default class InboxTab {
             if (btnCloneWeek) {
                 btnCloneWeek.parentElement.remove()
             }
-            InboxTab.defaultProject.getTasks()
-                .splice(InboxTab.defaultProject.getTasks()
+            project.getTasks()
+                .splice(project.getTasks()
                     .findIndex(
                         task => task.getID() === id
                     ), 1)
+            InboxTab.storageUpdateProject(project)
         })
         if (btnClone) {
             btnClone.addEventListener('click', (e) => {
@@ -263,11 +265,12 @@ export default class InboxTab {
                 if (btnCloneWeek) {
                     btnCloneWeek.parentElement.remove()
                 }
-                InboxTab.defaultProject.getTasks()
-                    .splice(InboxTab.defaultProject.getTasks()
+                project.getTasks()
+                    .splice(project.getTasks()
                         .findIndex(
                             task => task.getID() === id
                         ), 1)
+                InboxTab.storageUpdateProject(project)
             })
         }
         if (btnCloneWeek) {
@@ -277,11 +280,12 @@ export default class InboxTab {
                 if (btnClone) {
                     btnClone.parentElement.remove()
                 }
-                InboxTab.defaultProject.getTasks()
-                    .splice(InboxTab.defaultProject.getTasks()
+                project.getTasks()
+                    .splice(project.getTasks()
                         .findIndex(
                             task => task.getID() === id
                         ), 1)
+                InboxTab.storageUpdateProject(project)
             })
         }
     }
