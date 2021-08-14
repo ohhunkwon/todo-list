@@ -102,7 +102,6 @@ export default class InboxTab {
             else {
                 const task = new Task(description.value, dueDate.value)
                 InboxTab.defaultProject.addTask(task)
-                console.log('before: ', this.defaultProject)
                 InboxTab.renderTasks(task, this.defaultProject, inbox, description, dueDate, form, addTaskBtn)
                 InboxTab.storageUpdateProject(this.defaultProject)
             }
@@ -126,8 +125,7 @@ export default class InboxTab {
                 nodes[i].style.setProperty('display', 'inline')
             }
         }
-
-        console.log('after: ', project)
+        
         project.getTasks().forEach(task => {
             const day = Number(task.dueDate.slice(-2))
             const today = new Date()

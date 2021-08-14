@@ -46,6 +46,14 @@ body {
   margin: 10px 0px;
 }
 
+#projects-tab li button {
+  margin: 0 10px;
+}
+
+button {
+  padding: 3px;
+}
+
 form {
   margin: 15px 0px;
 }

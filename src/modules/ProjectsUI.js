@@ -11,8 +11,6 @@ export default class ProjectsTab {
 
         const allProjectsStorage = ProjectsTab.allProjectsStorage()
 
-        console.log('all', allProjectsStorage)
-
         if (!allProjectsStorage) {
             ProjectsTab.createForm()
             ProjectsTab.formPopUp()
@@ -31,8 +29,6 @@ export default class ProjectsTab {
             const form = document.getElementById('projects-form')
             const todos = document.getElementById('todos')
 
-            console.log(allProjectsStorage)
-
             allProjectsStorage.forEach(project => {
                 const projectJSON = JSON.parse(project)
                 Object.setPrototypeOf(projectJSON, new Project)
@@ -45,7 +41,6 @@ export default class ProjectsTab {
                         const form = document.getElementById('inbox-form')
                         const inbox = document.getElementById('inbox')
                         Object.setPrototypeOf(task, new Task)
-                        console.log(projectJSON, 'inbox')
                         InboxUI.renderTasks(task, projectJSON, inbox, description, dueDate, form, addTaskBtn)
 
                     })
@@ -58,12 +53,9 @@ export default class ProjectsTab {
                     const taskform = document.getElementById(`${projectJSON.getName()}-form`)
                     const projectDiv = document.getElementById(`${projectJSON.getName()}`)
 
-                    console.log('proj Div', projectDiv)
-
                     projectJSON.getTasks().forEach(task => {
                         if (task) {
                             Object.setPrototypeOf(task, new Task)
-                            console.log(task)
                             ProjectsTab.renderTasks(task, projectJSON, projectDiv, taskdescription, dueDate, taskform, addTaskBtn)
                         }
                     })
@@ -86,15 +78,25 @@ export default class ProjectsTab {
     }
 
     static storageUpdateProject(project) {
-        localStorage.setItem(`${project.getName()}`, JSON.stringify(project))
+        if (this.collection.includes(project)) {
+            localStorage.setItem(`${project.getName()}`, JSON.stringify(project))
+        } else {
+            localStorage.removeItem(`${project.getName()}`)
+        }
     }
 
     static renderProjects(project, todos, projectsTab, description, form, addProjectBtn) {
         ProjectsTab.collection.push(project)
         const projectDOMElement = document.createElement('li')
 
+        const delProjectBtn = document.createElement('button')
+        delProjectBtn.id = `del-${project}`
+        delProjectBtn.textContent = `delete`
+
         projectDOMElement.setAttribute('data-tab-target', `${project.getName()}`)
         projectDOMElement.textContent = `${project.getName()}`
+
+        projectDOMElement.appendChild(delProjectBtn)
 
         const tabContent = document.createElement('div')
         tabContent.id = `${project.getName()}`
@@ -118,7 +120,16 @@ export default class ProjectsTab {
         ProjectsTab.addFormToProject(project, projectForm, projectDiv)
         ProjectsTab.projectFormPopUp(addTaskToProject, projectForm)
         ProjectsTab.submitTaskToProject(project, projectDiv)
+        ProjectsTab.projectDelete(project, projectDOMElement, delProjectBtn)
         ProjectsTab.switchCategory()
+    }
+
+    static projectDelete(project, projectDOMElement, delProjectBtn) {
+        delProjectBtn.addEventListener('click', () => {
+            projectDOMElement.remove()
+            this.collection = this.collection.filter(obj => obj.getName() !== project.getName())
+            ProjectsTab.storageUpdateProject(project)
+        })
     }
 
     static renderTasks(task, project, projectDiv, description, dueDate, form, addTaskBtn) {
@@ -491,9 +502,7 @@ export default class ProjectsTab {
                 nodes[i].style.setProperty('display', 'inline')
             }
         }
-
-        console.log('lets see if project contains task', collection)
-
+        
         collection.forEach(project => {
             const tasks = project.getTasks()
             tasks.forEach(task => {
