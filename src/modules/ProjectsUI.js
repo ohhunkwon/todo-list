@@ -147,7 +147,7 @@ export default class ProjectsTab {
         ProjectsTab.addToToday(task)
         ProjectsTab.addToWeek(task)
         ProjectsTab.deleteTask(task.getID(), project)
-        ProjectsTab.checkDone(isDone, project)
+        ProjectsTab.checkDone(isDone, project, task)
     }
 
     static createForm() {
@@ -323,11 +323,36 @@ export default class ProjectsTab {
         })
     }
 
-    static checkDone(isDone, project) {
+    static checkDone(isDone, project, task) {
         const checkbox = document.getElementById(isDone)
         const checkboxClone = document.getElementById(`${isDone}-clone`)
         const checkboxCloneWeek = document.getElementById(`${isDone}-clone-week`)
 
+        window.addEventListener('DOMContentLoaded', () => {
+            if (task.getCompleted()) {
+                checkbox.checked = true
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                if (checkboxClone) {
+                    checkboxClone.checked = true
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                }
+                if (checkboxCloneWeek) {
+                    checkboxCloneWeek.checked = true
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'line-through')
+                }
+            } else {
+                checkbox.checked = false
+                checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                if (checkboxClone) {
+                    checkboxClone.checked = false
+                    checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                }
+                if (checkboxCloneWeek) {
+                    checkboxCloneWeek.checked = false
+                    checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
+                }
+            }
+        })
 
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
@@ -351,6 +376,7 @@ export default class ProjectsTab {
                     checkboxCloneWeek.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
             }
+            task.setCompleted()
             ProjectsTab.storageUpdateProject(project)
         })
 
@@ -365,6 +391,7 @@ export default class ProjectsTab {
                     checkbox.checked = false
                     checkbox.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                 }
+                task.setCompleted()
                 ProjectsTab.storageUpdateProject(project)
             })
         }
@@ -388,6 +415,7 @@ export default class ProjectsTab {
                         checkboxClone.parentElement.childNodes[2].style.setProperty('text-decoration', 'none')
                     }
                 }
+                task.setCompleted()
                 ProjectsTab.storageUpdateProject(project)
             })
         }
